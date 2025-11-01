@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome — Horizon Bank</title>
+
+    <style>
+      :root {
+        --bg-start: #0f172a;
+        --bg-end: #1e293b;
+        --card-bg: rgba(255, 255, 255, 0.07);
+        --card-stroke: rgba(255, 255, 255, 0.18);
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --accent: #7dd3fc;
+        --accent-strong: #38bdf8;
+        --radius: 16px;
+        --shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto,
+          Arial, sans-serif;
+        color: var(--text);
+        background: radial-gradient(
+            1200px 800px at 10% 10%,
+            #0b1020,
+            transparent 60%
+          ),
+          radial-gradient(1000px 700px at 90% 20%, #0a2642, transparent 55%),
+          linear-gradient(160deg, var(--bg-start), var(--bg-end));
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-stroke);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 40px 50px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: 28px;
+        font-weight: 700;
+      }
+
+      p {
+        color: var(--muted);
+        margin-bottom: 26px;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 14px 22px;
+        border-radius: 12px;
+        font-weight: 700;
+        color: #002033;
+        background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+        box-shadow: 0 10px 20px rgba(56, 189, 248, 0.25),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+        text-decoration: none;
+        transition: 0.2s;
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>✅ Login Successful</h1>
+      <p>Welcome back! You have securely accessed your Horizon Bank account.</p>
+      <a href="Login.html" class="btn">Sign out.</a>
+    </div>
+  </body>
+</html>
