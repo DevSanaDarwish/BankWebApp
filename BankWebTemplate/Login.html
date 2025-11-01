@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Secure Login — Horizon Bank</title>
+    <meta
+      name="description"
+      content="Sign in to Horizon Bank's secure online banking portal."
+    />
+
+    <!--
+    ┌───────────────────────────────────────────────────────────────────────┐
+    │ Code Overview                                                         │
+    │ • Purpose: Modern, secure-looking bank login page with accessible UI. │
+    │ • Layout: Full-height gradient bg → centered glass card → logo,       │
+    │   title, inputs (username, password), optional 2FA, remember-me,      │
+    │   actions (Forgot, Sign in).                                          │
+    │ • Use Cases: Banking portals, SaaS dashboards, internal apps.         │
+    │ • Key Properties: Responsive, WCAG-friendly, embedded CSS only,       │
+    │   subtle animation (reduced with prefers-reduced-motion), form hints,  │
+    │   password visibility toggle, clean system font stack.                │
+    └───────────────────────────────────────────────────────────────────────┘
+    -->
+
+    <style>
+      :root {
+        --bg-start: #0f172a; /* slate-900 */
+        --bg-end: #1e293b; /* slate-800 */
+        --card-bg: rgba(255, 255, 255, 0.07);
+        --card-stroke: rgba(255, 255, 255, 0.18);
+        --text: #e5e7eb; /* gray-200 */
+        --muted: #94a3b8; /* slate-400 */
+        --accent: #7dd3fc; /* sky-300 */
+        --accent-strong: #38bdf8; /* sky-400 */
+        --error: #f87171; /* red-400 */
+        --focus: #22d3ee; /* cyan-400 */
+        --shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+        --radius: 16px;
+      }
+
+      /* Reset & base */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+          Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji",
+          "Segoe UI Emoji";
+
+        color: var(--text);
+        background: radial-gradient(
+            1200px 800px at 10% 10%,
+            #0b1020,
+            transparent 60%
+          ),
+          radial-gradient(1000px 700px at 90% 20%, #0a2642, transparent 55%),
+          linear-gradient(160deg, var(--bg-start), var(--bg-end));
+        display: grid;
+        place-items: center;
+        overflow-x: hidden;
+      }
+
+      .login-shell {
+        width: min(96vw, 980px);
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 28px;
+        align-items: stretch;
+      }
+
+      /* Card */
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-stroke);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      /* Left: Branding */
+      .brand {
+        position: relative;
+        padding: 28px;
+        overflow: clip;
+      }
+      .brand::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          600px 220px at 20% 15%,
+          rgba(125, 211, 252, 0.15),
+          transparent 60%
+        );
+        pointer-events: none;
+      }
+      .logo {
+        display: inline-flex;
+        gap: 12px;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+      }
+      .logo svg {
+        width: 40px;
+        height: 40px;
+        filter: drop-shadow(0 6px 10px rgba(56, 189, 248, 0.35));
+      }
+      .bank-name {
+        font-weight: 700;
+        letter-spacing: 0.3px;
+      }
+      .hero {
+        margin-top: 24px;
+        font-size: clamp(26px, 3.4vw, 36px);
+        line-height: 1.15;
+      }
+      .blurb {
+        margin-top: 10px;
+        color: var(--muted);
+        max-width: 52ch;
+      }
+      .highlights {
+        margin-top: 22px;
+        display: grid;
+        gap: 12px;
+      }
+      .hi {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        color: #bfdbfe; /* blue-200 */
+        font-size: 14px;
+      }
+      .hi svg {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 18px;
+      }
+
+      /* Right: Form */
+      .form {
+        padding: 28px;
+        display: grid;
+        gap: 18px;
+      }
+      .form header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .form h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+      .help-link {
+        font-size: 14px;
+        color: var(--accent);
+        text-decoration: none;
+      }
+      .help-link:hover {
+        color: var(--accent-strong);
+        text-decoration: underline;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+      .label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .input {
+        position: relative;
+      }
+      .input input {
+        width: 100%;
+        padding: 14px 44px 14px 44px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text);
+        outline: none;
+        transition: border-color 160ms ease, background 160ms ease,
+          box-shadow 160ms ease;
+      }
+      .input input::placeholder {
+        color: #9aa3af;
+      }
+      .input input:focus {
+        border-color: var(--focus);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25);
+      }
+
+      .icon-left,
+      .icon-right {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        opacity: 0.9;
+        pointer-events: none;
+      }
+      .icon-left {
+        left: 14px;
+      }
+      .icon-right {
+        right: 14px;
+      }
+
+      .toggle-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 12px;
+        padding: 6px 8px;
+        border-radius: 8px;
+      }
+      .toggle-btn:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .row .remember {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .row .remember input {
+        accent-color: var(--accent-strong);
+      }
+
+      .cta {
+        display: grid;
+        gap: 10px;
+        margin-top: 4px;
+      }
+
+      .btn {
+        display: inline-flex; /* allows centering */
+        align-items: center; /* vertical center */
+        justify-content: center; /* horizontal center */
+        padding: 14px 22px;
+        border-radius: 12px;
+        font-weight: 700;
+        color: #002033;
+        background: linear-gradient(180deg, #38bdf8, #0ea5e9);
+        box-shadow: 0 10px 20px rgba(56, 189, 248, 0.25),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+        text-decoration: none;
+        transition: 0.2s;
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+
+      .subtle {
+        font-size: 13px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .separator {
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.18),
+          transparent
+        );
+        margin: 2px 0 6px;
+      }
+
+      .error-text {
+        color: var(--error);
+        font-size: 13px;
+        display: none;
+      }
+      .error .error-text {
+        display: block;
+      }
+      .error input {
+        border-color: var(--error);
+        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+      }
+
+      footer.smallprint {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      footer.smallprint a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      footer.smallprint a:hover {
+        text-decoration: underline;
+        color: var(--accent-strong);
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        .login-shell {
+          grid-template-columns: 1fr;
+          width: min(94vw, 580px);
+        }
+        .brand {
+          order: 2;
+        }
+        .form {
+          order: 1;
+        }
+      }
+
+      /* Motion preferences */
+      @media (prefers-reduced-motion: reduce) {
+        .btn,
+        .input input {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="login-shell" role="main">
+      <!-- Branding / Copy -->
+      <section class="card brand" aria-label="Horizon Bank introduction">
+        <a class="logo" href="#" aria-label="Horizon Bank Home">
+          <!-- Inline SVG logo (shield + waves) -->
+          <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="g" x1="0" x2="1">
+                <stop offset="0" stop-color="#7dd3fc" />
+                <stop offset="1" stop-color="#22d3ee" />
+              </linearGradient>
+            </defs>
+            <path
+              fill="url(#g)"
+              d="M32 4c6 4 14 6 24 6v18c0 16-9.5 26.5-24 32C17.5 54.5 8 44 8 28V10c10 0 18-2 24-6z"
+            />
+            <path
+              fill="rgba(2,6,23,.6)"
+              d="M16 30c5 2 10 3 16 3s11-1 16-3c-3 7-9 12-16 12s-13-5-16-12z"
+            />
+          </svg>
+          <span class="bank-name">Horizon Bank</span>
+        </a>
+        <h1 class="hero">Banking, reimagined for your every day.</h1>
+        <p class="blurb">
+          Access your accounts securely. Track spending, move money, and manage
+          cards with enterprise‑grade protection.
+        </p>
+
+        <div class="highlights" aria-label="Security highlights">
+          <div class="hi">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 2l7 4v6c0 5-3.8 9.3-7 10-3.2-.7-7-5-7-10V6l7-4zm0 5a3 3 0 00-3 3v2h6V10a3 3 0 00-3-3z"
+              />
+            </svg>
+            TLS 1.3 & device‑binding
+          </div>
+          <div class="hi">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 3a9 9 0 100 18 9 9 0 000-18zm1 5v5l4 2-.8 1.4L11 13V8h2z"
+              />
+            </svg>
+            24/7 fraud monitoring
+          </div>
+          <div class="hi">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M4 6h16v12H4z M7 9h10v2H7zm0 4h7v2H7z"
+              />
+            </svg>
+            Instant card controls
+          </div>
+        </div>
+      </section>
+
+      <!-- Sign-in Form -->
+      <section class="card form" aria-label="Sign in form">
+        <header>
+          <h2>Sign in to your account</h2>
+          <a class="help-link" href="http://www.google.com" target="_blank"
+            >Need help?</a
+          >
+        </header>
+        <div class="separator" role="presentation"></div>
+
+        <form id="loginForm" method="post" action="/auth/login" novalidate>
+          <!-- Username / Email -->
+          <div class="field" id="userField">
+            <div class="label-row">
+              <label for="username">Email or Username</label>
+              <span aria-live="polite" class="error-text" id="userError"
+                >Please enter your email or username.</span
+              >
+            </div>
+            <div class="input">
+              <svg class="icon-left" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4 0-8 2-8 5v1h16v-1c0-3-4-5-8-5z"
+                />
+              </svg>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                inputmode="email"
+                autocomplete="username"
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="field" id="passField">
+            <div class="label-row">
+              <label for="password">Password</label>
+             
+            </div>
+            <div class="input">
+              <svg class="icon-left" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M12 2a5 5 0 00-5 5v3H5v12h14V10h-2V7a5 5 0 00-5-5zm-3 8V7a3 3 0 116 0v3H9z"
+                />
+              </svg>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="••••••••"
+                required
+                minlength="8"
+              />
+             
+            </div>
+            <span aria-live="polite" class="error-text" id="passError"
+              >Password must be at least 8 characters.</span
+            >
+          </div>
+
+          <!-- Optional One-Time Code (2FA) -->
+          <div class="field">
+            <div class="label-row">
+              <label for="otp">One‑time code (if prompted)</label>
+              <span style="font-size: 12px; color: var(--muted)"
+                >From SMS, Email, or Authenticator</span
+              >
+            </div>
+            <div class="input">
+              <svg class="icon-left" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="currentColor"
+                  d="M3 5h18v14H3z M6 8h12v2H6zm0 4h12v2H6z"
+                />
+              </svg>
+              <input
+                id="otp"
+                name="otp"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9]{4,8}"
+                autocomplete="one-time-code"
+                placeholder="6‑digit code"
+                aria-describedby="otpHelp"
+              />
+            </div>
+            <span id="otpHelp" class="subtle"
+              >Leave empty unless we asked for a code.</span
+            >
+          </div>
+
+          <!-- Remember + Terms -->
+          <div class="row">
+            <label class="remember"
+              ><input type="checkbox" name="remember" value="1" /> Keep me
+              signed in</label
+            >
+            <a class="help-link" href="#security">Security tips</a>
+          </div>
+
+          <!-- Submit -->
+          <div class="cta">
+            <a href="LoggedIn.html" class="btn">Sign In.</a>
+
+            <p class="subtle">
+              By signing in you agree to our <a href="#">Terms</a> and
+              <a href="#">Privacy Policy</a>.
+            </p>
+          </div>
+
+          <footer class="smallprint" aria-label="Regulatory footer">
+            <p>Horizon Bank N.A. Member FDIC. Equal Housing Lender.</p>
+          </footer>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
