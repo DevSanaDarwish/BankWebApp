@@ -6,22 +6,8 @@
     <title>Secure Login — Horizon Bank</title>
     <meta
       name="description"
-      content="Sign in to Horizon Bank's secure online banking portal."
+      content="Login to Horizon Bank's secure online banking portal."
     />
-
-    <!--
-    ┌───────────────────────────────────────────────────────────────────────┐
-    │ Code Overview                                                         │
-    │ • Purpose: Modern, secure-looking bank login page with accessible UI. │
-    │ • Layout: Full-height gradient bg → centered glass card → logo,       │
-    │   title, inputs (username, password), optional 2FA, remember-me,      │
-    │   actions (Forgot, Sign in).                                          │
-    │ • Use Cases: Banking portals, SaaS dashboards, internal apps.         │
-    │ • Key Properties: Responsive, WCAG-friendly, embedded CSS only,       │
-    │   subtle animation (reduced with prefers-reduced-motion), form hints,  │
-    │   password visibility toggle, clean system font stack.                │
-    └───────────────────────────────────────────────────────────────────────┘
-    -->
 
     <style>
       :root {
@@ -329,6 +315,15 @@
         color: var(--accent-strong);
       }
 
+      .contact-footer a {
+  color: #38bdf8; /* لون طبيعي غامق */
+  text-decoration: none;
+}
+
+.contact-footer a:hover {
+  color: #007bff; /* لون عند المرور (اختياري) */
+}
+
       /* Responsive */
       @media (max-width: 900px) {
         .login-shell {
@@ -350,6 +345,15 @@
           transition: none;
         }
       }
+
+      .subtle a {
+  color: #841e3d; /* لون أزرق رمادي أنيق */
+  text-decoration: underline; /* اختياري */
+}
+
+.subtle a:hover {
+  color: #c26d8b; /* لون ذهبي عند المرور */
+}
     </style>
   </head>
 
@@ -415,9 +419,9 @@
       </section>
 
       <!-- Sign-in Form -->
-      <section class="card form" aria-label="Sign in form">
+      <section class="card form" aria-label="Login form">
         <header>
-          <h2>Sign in to your account</h2>
+          <h2>Login to your account</h2>
           <a class="help-link" href="http://www.google.com" target="_blank"
             >Need help?</a
           >
@@ -480,60 +484,49 @@
               >Password must be at least 8 characters.</span
             >
           </div>
-
-          <!-- Optional One-Time Code (2FA) -->
-          <div class="field">
-            <div class="label-row">
-              <label for="otp">One‑time code (if prompted)</label>
-              <span style="font-size: 12px; color: var(--muted)"
-                >From SMS, Email, or Authenticator</span
-              >
-            </div>
-            <div class="input">
-              <svg class="icon-left" viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  fill="currentColor"
-                  d="M3 5h18v14H3z M6 8h12v2H6zm0 4h12v2H6z"
-                />
-              </svg>
-              <input
-                id="otp"
-                name="otp"
-                type="text"
-                inputmode="numeric"
-                pattern="[0-9]{4,8}"
-                autocomplete="one-time-code"
-                placeholder="6‑digit code"
-                aria-describedby="otpHelp"
-              />
-            </div>
-            <span id="otpHelp" class="subtle"
-              >Leave empty unless we asked for a code.</span
-            >
+           
           </div>
 
           <!-- Remember + Terms -->
           <div class="row">
             <label class="remember"
               ><input type="checkbox" name="remember" value="1" /> Keep me
-              signed in</label
+              Login</label
             >
             <a class="help-link" href="#security">Security tips</a>
           </div>
 
           <!-- Submit -->
           <div class="cta">
-            <a href="LoggedIn.html" class="btn">Sign In.</a>
+            <a href="LoggedIn.html" class="btn">Login.</a>
 
             <p class="subtle">
-              By signing in you agree to our <a href="#">Terms</a> and
+              By Login you agree to our <a href="#">Terms</a> and
               <a href="#">Privacy Policy</a>.
             </p>
           </div>
 
-          <footer class="smallprint" aria-label="Regulatory footer">
-            <p>Horizon Bank N.A. Member FDIC. Equal Housing Lender.</p>
-          </footer>
+         <footer class="contact-footer">
+  <p>Connect with us:</p>
+  <ul style="list-style: none; padding: 0; display: flex; gap: 15px;">
+    <li>
+      <a href="#" target="_blank" aria-label="Facebook">
+        <svg width="24" height="24" fill="currentColor" aria-hidden="true">
+          <path d="M22 12a10 10 0 10-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.4 3h-1.9v7A10 10 0 0022 12z"/>
+        </svg>
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_blank" aria-label="Telegram">
+        <svg width="24" height="24" fill="currentColor" aria-hidden="true">
+          <path d="M9.5 16.5l-.4 4.1c.6 0 .9-.3 1.2-.6l2.9-2.8 6 4.4c1.1.6 1.9.3 2.2-1.1l3.9-18.3c.4-1.7-.6-2.4-2-2L1.3 9.3c-1.6.6-1.6 1.5-.3 1.9l5.2 1.6 12.1-7.6c.6-.4 1.2-.2.7.2L9.5 16.5z"/>
+        </svg>
+      </a>
+    </li>
+  </ul>
+</footer>  
+
+
         </form>
       </section>
     </main>
